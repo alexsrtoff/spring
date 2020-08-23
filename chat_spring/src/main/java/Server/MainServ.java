@@ -1,25 +1,35 @@
 package Server;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
 import java.util.Vector;
 
+@Component
 public class MainServ {
     private Vector<ClientHandler> clients;
+    private DBService dbService;
 
-    public MainServ() {
+    @Autowired
+    public MainServ(DBService dbService) {
+        this.dbService = dbService;
         clients = new Vector<>();
         ServerSocket server = null;
         Socket socket = null;
         try {
-            DBService.connect();
+            dbService.connect();
             server = new ServerSocket(8189);
             System.out.println("Сервер запущен!");
 
             while (true) {
                 socket = server.accept();
-                new ClientHandler(this, socket);
+                new ClientHandler(this, socket, dbService);
             }
 
         } catch (IOException e) {
@@ -35,7 +45,7 @@ public class MainServ {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            DBService.disconnect();
+            dbService.disconnect();
         }
     }
 
@@ -48,7 +58,7 @@ public class MainServ {
         }
         String out = sb.toString();
         for (ClientHandler o : clients) {
-            String clientList = DBService.isInBlacklist(o, out);
+            String clientList = dbService.isInBlacklist(o, out);
             o.sendMsg(clientList);
         }
     }
@@ -69,7 +79,7 @@ public class MainServ {
     public void broadcastMsg(String msg) {
         String[] tockens = msg.split(" ", 2);
         for (ClientHandler o: clients) {
-           if(DBService.getBlackList(o.getNick(), tockens[0]) == null){
+           if(dbService.getBlackList(o.getNick(), tockens[0]) == null){
                o.sendMsg(tockens[1]);
            }
         }

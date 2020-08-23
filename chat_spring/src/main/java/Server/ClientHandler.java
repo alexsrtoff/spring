@@ -5,17 +5,20 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
 
+
 public class ClientHandler {
     private Socket socket;
     DataInputStream in;
     DataOutputStream out;
     MainServ serv;
     String nick;
+    DBService dbService;
 
     public String getNick() {return nick;}
 
-    public ClientHandler(MainServ serv, Socket socket){
+    public ClientHandler(MainServ serv, Socket socket, DBService dbService){
     try {
+        this.dbService = dbService;
         this.socket = socket;
         this.serv = serv;
         this.in = new DataInputStream(socket.getInputStream());
@@ -30,16 +33,16 @@ public class ClientHandler {
                         String msg = in.readUTF();
                         if(msg.startsWith("/reg")){
                             String[] tockens = msg.split(" ");
-                            if(DBService.checkClient(tockens[1])){
+                            if(dbService.checkClient(tockens[1])){
                                 sendMsg("Ник занят попробуйте друдой");
                             }else {
-                                DBService.regNewClient(tockens[1], tockens[2], tockens[3]);
+                                dbService.regNewClient(tockens[1], tockens[2], tockens[3]);
                                 sendMsg("/regok");
                             }
                         }
                         if (msg.startsWith("/auth")) {
                             String[] tockens = msg.split(" ");
-                            String newNick = DBService.getNickByLoginAndPass(tockens[1], tockens[2]);
+                            String newNick = dbService.getNickByLoginAndPass(tockens[1], tockens[2]);
                             if(serv.checkNick(newNick)){
                                 sendMsg("Логин/ник занят. Введите другой логин");
                             }
@@ -65,8 +68,8 @@ public class ClientHandler {
                             String[] tockens = msg.split(" ", 3);
                         }else if(msg.startsWith("/bl")){
                             String tockens[] =msg.split(" ");
-                            if(DBService.getIdByNickname(tockens[1]) != null){
-                                DBService.addToBlackList(nick, tockens[1]);
+                            if(dbService.getIdByNickname(tockens[1]) != null){
+                                dbService.addToBlackList(nick, tockens[1]);
                                 sendMsg("Пользователь: " + tockens[1] + " в черном списке.");
                                 String log = "add " + tockens[1] + " to blacklist";
                                 serv.broadcastClientsList();
