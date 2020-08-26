@@ -58,6 +58,15 @@ public class UserRepository {
         return new User(-1, "", "");
     }
 
+    public void update(User user) throws SQLException {
+        try (PreparedStatement stmt = conn.prepareStatement(
+                "update users set login = ? where id = ?;")) {
+            stmt.setString(1, user.getLogin());
+            stmt.setInt(2, user.getId());
+            stmt.execute();
+        }
+    }
+
     public List<User> getAllUsers() throws SQLException {
         List<User> res = new ArrayList<>();
         try (Statement stmt = conn.createStatement()) {
