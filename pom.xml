@@ -11,6 +11,7 @@
     <modules>
         <module>chat_spring</module>
         <module>lesson-2-spring-mvc</module>
+        <module>spring-shop</module>
     </modules>
 
 <!--    <properties>-->

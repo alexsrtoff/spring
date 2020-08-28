@@ -67,6 +67,7 @@ public class UserRepository {
         }
     }
 
+
     public List<User> getAllUsers() throws SQLException {
         List<User> res = new ArrayList<>();
         try (Statement stmt = conn.createStatement()) {

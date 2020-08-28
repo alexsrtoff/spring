@@ -13,7 +13,7 @@
 <?import java.net.URL?>
 <?import javafx.scene.control.PasswordField?>
 <?import javafx.scene.control.ListView?>
-<VBox fx:controller="Client.Controller"
+<VBox fx:shop.controller="Client.Controller"
       xmlns:fx="http://javafx.com/fxml" alignment="center" spacing="5">
     <stylesheets><URL value="@/CSS/Styles.css"/></stylesheets>
 
