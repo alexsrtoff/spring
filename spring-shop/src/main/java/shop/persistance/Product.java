@@ -9,7 +9,16 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class Product {
 
-    private int id;
+    private Integer id;
     private String title;
-    private int price;
+    private Integer price;
+
+    @Override
+    public String toString() {
+        return "Product{" +
+                "id=" + id +
+                ", title='" + title + '\'' +
+                ", price=" + price +
+                '}';
+    }
 }

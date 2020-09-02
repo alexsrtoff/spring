@@ -50,7 +50,7 @@ public class ProductRepository {
 
     }
 
-    public Product findById(long id) throws SQLException {
+    public Product findById(Integer id) throws SQLException {
         PreparedStatement stmt = connection.prepareStatement("select id, title, price from products where id = ?;");
         stmt.setLong(1, id);
         ResultSet rs = stmt.executeQuery();

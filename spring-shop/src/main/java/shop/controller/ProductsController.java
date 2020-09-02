@@ -25,34 +25,31 @@ public class ProductsController {
     }
 
     @GetMapping("/update/{id}")
-    public String editProduct(@PathVariable("id") long id, Model model) throws SQLException {
+    public String editProduct(@PathVariable("id") Integer id, Model model) throws SQLException {
         Product product = productRepository.findById(id);
         model.addAttribute("product", product);
         return "product";
     }
 
-
     @PostMapping("/update")
     public String updateProduct(Product product) throws SQLException {
-        productRepository.update(product);
+        if (product.getId() != null) {
+            productRepository.update(product);
+        }else {
+            productRepository.addProduct(product);
+        }
         return "redirect:/products";
     }
 
     @GetMapping("/addproduct")
-    public String addProduct(){
-        return "addproduct";
+    public String addProduct(Model model){
+        Product product = new Product();
+        model.addAttribute("product", product);
+        return "product";
     }
 
-    @PostMapping("/addproduct")
-    public String add(Product product) throws SQLException {
-        productRepository.addProduct(product);
-        return "redirect:/products";
-    }
-
-
-/*наверно не совсем правильно так писать delete, но вроде работает :)*/
-    @GetMapping("/deleteone/{id}")
-    public String deleteProduct(@PathVariable("id") long id) throws SQLException {
+    @DeleteMapping("/{id}/delete")
+    public String delete(@PathVariable("id") Integer id) throws SQLException {
         Product product = productRepository.findById(id);
         productRepository.deleteOne(product);
         return "redirect:/products";

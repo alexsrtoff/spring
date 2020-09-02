@@ -12,6 +12,7 @@
         <module>chat_spring</module>
         <module>lesson-2-spring-mvc</module>
         <module>spring-shop</module>
+        <module>lesson-3-hibernate</module>
     </modules>
 
 <!--    <properties>-->
