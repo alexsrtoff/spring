@@ -4,10 +4,12 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import shop.persistance.Product;
 import shop.persistance.ProductRepository;
 
+import javax.validation.Valid;
 import java.sql.SQLException;
 
 @Controller
@@ -32,7 +34,10 @@ public class ProductsController {
     }
 
     @PostMapping("/update")
-    public String updateProduct(Product product) throws SQLException {
+    public String updateProduct(@Valid Product product, BindingResult bindingResult) throws SQLException {
+        if (bindingResult.hasErrors()){
+            return "product";
+        }
         if (product.getId() != null) {
             productRepository.update(product);
         }else {
