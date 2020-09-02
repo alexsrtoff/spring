@@ -36,10 +36,23 @@
     <div class="row py-2">
         <div class="col-12">
             <form th:action="@{/user/update}" method="post" th:object="${user}">
-                <input th:type="hidden" th:field="*{id}">
+                <input type="hidden" th:field="*{id}">
                 <div class="form-group">
                     <label>Login</label>
                     <input type="text" class="form-control" th:field="*{login}" placeholder="Enter login">
+                    <small id="loginError" class="form-text text-error"
+                           th:if="${#fields.hasErrors('login')}" th:errors="*{login}">Validation error</small>
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" class="form-control" th:field="*{password}" placeholder="Enter password">
+                    <small id="passwordError" class="form-text text-error"
+                           th:if="${#fields.hasErrors('password')}" th:errors="*{password}">Validation error</small>
+                    <br>
+                    <label>Repeat password</label>
+                    <input type="password" class="form-control" th:field="*{matchingPassword}" placeholder="Repeat password">
+                    <small id="matchpasswordError" class="form-text text-error"
+                           th:if="${#fields.hasErrors('matchingPassword')}" th:errors="*{matchingPassword}">Validation error</small>
                 </div>
                 <button type="submit" class="btn btn-primary">Submit</button>
             </form>

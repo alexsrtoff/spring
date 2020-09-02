@@ -32,6 +32,24 @@ public class UserRepository {
         }
     }
 
+    public void update(User user) throws SQLException {
+        try (PreparedStatement stmt = conn.prepareStatement(
+                "update users set login = ?, password = ? where id = ?;")) {
+            stmt.setString(1, user.getLogin());
+            stmt.setString(2, user.getPassword());
+            stmt.setLong(3, user.getId());
+            stmt.execute();
+        }
+    }
+
+    public void delete(Integer id) throws SQLException {
+        try (PreparedStatement stmt = conn.prepareStatement(
+                "delete from users where id = ?;")) {
+            stmt.setLong(1, id);
+            stmt.execute();
+        }
+    }
+
     public User findByLogin(String login) throws SQLException {
         try (PreparedStatement stmt = conn.prepareStatement(
                 "select id, login, password from users where login = ?")) {
@@ -45,7 +63,7 @@ public class UserRepository {
         return new User(-1, "", "");
     }
 
-    public User findById(Long id) throws SQLException {
+    public User findById(Integer id) throws SQLException {
         try (PreparedStatement stmt = conn.prepareStatement(
                 "select id, login, password from users where id = ?")) {
             stmt.setLong(1, id);
@@ -57,16 +75,6 @@ public class UserRepository {
         }
         return new User(-1, "", "");
     }
-
-    public void update(User user) throws SQLException {
-        try (PreparedStatement stmt = conn.prepareStatement(
-                "update users set login = ? where id = ?;")) {
-            stmt.setString(1, user.getLogin());
-            stmt.setInt(2, user.getId());
-            stmt.execute();
-        }
-    }
-
 
     public List<User> getAllUsers() throws SQLException {
         List<User> res = new ArrayList<>();
