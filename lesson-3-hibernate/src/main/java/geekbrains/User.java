@@ -2,6 +2,7 @@ package geekbrains;
 
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -18,11 +19,14 @@ public class User {
     @Column
     private String password;
 
+
+
     @OneToMany(
             mappedBy = "user",
             cascade = CascadeType.ALL
     )
     private List<Contact> contacts;
+
 
     public User() {
     }
@@ -31,6 +35,27 @@ public class User {
         this.id = id;
         this.login = login;
         this.password = password;
+    }
+
+    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @JoinTable(
+            name = "products_users",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "product_id")
+    )
+    private List<Product> products = new ArrayList<>();
+
+    public List<Product> getProducts() {
+        return products;
+    }
+
+
+    public void setProducts(List<Product> products) {
+        this.products = products;
+    }
+
+    public void addProduct(Product product){
+        products.add(product);
     }
 
     public Integer getId() {
