@@ -19,8 +19,6 @@ public class User {
     @Column
     private String password;
 
-
-
     @OneToMany(
             mappedBy = "user",
             cascade = CascadeType.ALL
@@ -48,7 +46,6 @@ public class User {
     public List<Product> getProducts() {
         return products;
     }
-
 
     public void setProducts(List<Product> products) {
         this.products = products;

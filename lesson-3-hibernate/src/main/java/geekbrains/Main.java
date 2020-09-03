@@ -48,6 +48,12 @@ public class Main {
         User user1 = em.find(User.class, 1);
         User user2 = em.find(User.class, 2);
 
+        /*при внесении изменений параметров товара
+         в таблеце зафиксируется дата/время изменения,
+         */
+//        product1.setPrice(9999999);
+//        product1.setTitle("SuperPhone");
+
         user1.addProduct(product1);
         user1.addProduct(product2);
         user1.addProduct(product3);

@@ -1,6 +1,10 @@
 package geekbrains;
 
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+
 import javax.persistence.*;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,6 +23,15 @@ public class Product {
     private Integer price;
 
 
+
+    @Column
+    @CreationTimestamp
+    private LocalDateTime createdDate;
+
+
+    @Column
+    @UpdateTimestamp
+    private LocalDateTime updeteDate;
 
     public Product() {
     }
