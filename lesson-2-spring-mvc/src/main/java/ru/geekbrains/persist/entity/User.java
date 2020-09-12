@@ -1,21 +1,30 @@
-package ru.geekbrains.persistance;
+package ru.geekbrains.persist.entity;
 
+import javax.persistence.*;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 
+@Entity
+@Table(name = "users")
 public class User {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
+    @Column
     @NotBlank
     private String login;
 
     @Email
+    @Column
     private String email;
 
     @NotBlank
+    @Column
     private String password;
 
+    @Transient
     @NotBlank
     private String matchingPassword;
 
@@ -26,6 +35,14 @@ public class User {
         this.id = id;
         this.login = login;
         this.password = password;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     public String getMatchingPassword() {

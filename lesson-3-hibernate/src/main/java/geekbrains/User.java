@@ -55,6 +55,18 @@ public class User {
         products.add(product);
     }
 
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private List<OrderItem> orderItems;
+
+
+    public List<OrderItem> getOrderItems() {
+        return orderItems;
+    }
+
+    public void setOrderItems(List<OrderItem> orderItems) {
+        this.orderItems = orderItems;
+    }
+
     public Integer getId() {
         return id;
     }

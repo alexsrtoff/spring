@@ -21,5 +21,6 @@
         <mapping class="geekbrains.User"/>
         <mapping class="geekbrains.Contact"/>
         <mapping class="geekbrains.Product"/>
+        <mapping class="geekbrains.OrderItem"/>
     </session-factory>
 </hibernate-configuration>
