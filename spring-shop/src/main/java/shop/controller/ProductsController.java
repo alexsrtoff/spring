@@ -1,48 +1,51 @@
 package shop.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-import shop.persistance.Product;
-import shop.persistance.ProductRepository;
+import shop.persist.entity.Product;
+import shop.persist.repo.ProductRepository;
 
 import javax.validation.Valid;
 import java.sql.SQLException;
+import java.util.List;
 
 @Controller
 @RequestMapping("/products")
 @RequiredArgsConstructor
 public class ProductsController {
 
+    private final static Logger logger = LoggerFactory.getLogger(ProductsController.class);
+
     @Autowired
     private ProductRepository productRepository;
 
     @GetMapping()
-    public String showAllProducts(Model model) throws SQLException {
-        model.addAttribute("products", productRepository.findAllProducts());
+    public String showAllProducts(Model model, @RequestParam(value = "title", required = false) String title){
+        logger.info("Filtering by name; {}", title);
+        List<Product> products = productRepository.findAll();
+        model.addAttribute("products", products);
         return "products";
     }
 
     @GetMapping("/update/{id}")
-    public String editProduct(@PathVariable("id") Integer id, Model model) throws SQLException {
-        Product product = productRepository.findById(id);
+    public String editProduct(@PathVariable("id") Integer id, Model model){
+        Product product = productRepository.findById(id).get();
         model.addAttribute("product", product);
         return "product";
     }
 
     @PostMapping("/update")
-    public String updateProduct(@Valid Product product, BindingResult bindingResult) throws SQLException {
+    public String updateProduct(@Valid Product product, BindingResult bindingResult){
         if (bindingResult.hasErrors()){
             return "product";
         }
-        if (product.getId() != null) {
-            productRepository.update(product);
-        }else {
-            productRepository.addProduct(product);
-        }
+        productRepository.save(product);
         return "redirect:/products";
     }
 
@@ -55,8 +58,7 @@ public class ProductsController {
 
     @DeleteMapping("/{id}/delete")
     public String delete(@PathVariable("id") Integer id) throws SQLException {
-        Product product = productRepository.findById(id);
-        productRepository.deleteOne(product);
+        productRepository.deleteById(id);
         return "redirect:/products";
     }
 }
