@@ -4,17 +4,22 @@ import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import shop.persist.entity.Product;
 import shop.persist.repo.ProductRepository;
+import shop.persist.repo.ProductSpecification;
 
 import javax.validation.Valid;
 import java.math.BigDecimal;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Optional;
 
 @Controller
 @RequestMapping("/products")
@@ -31,44 +36,62 @@ public class ProductsController {
                                   @RequestParam(value = "title", required = false) String title,
                                   @RequestParam(value = "minprice", required = false) BigDecimal minprice,
                                   @RequestParam(value = "maxprice", required = false) BigDecimal maxprice,
-                                  @RequestParam(value = "showproduct", required = false) String showproduct){
+                                  @RequestParam(value = "showproduct", required = false) String showproduct,
+                                  @RequestParam (value = "page")Optional<Integer> page,
+                                  @RequestParam (value = "size")Optional<Integer> size,
+                                  @RequestParam(value = "sort", required = false) String srt){
         logger.info("Filtering by name; {}", title);
-        List<Product> products;
 
-        if((title == null || title.isEmpty()) & (maxprice == null & minprice == null)){
-            products = productRepository.findAll();
-        }else{
-            if (title == null || title.isEmpty() & (maxprice !=null & minprice != null)){
-               products = productRepository.findByPriceIsGreaterThanEqualAndPriceIsLessThanEqual(minprice, maxprice);
-            }else if (title == null || title.isEmpty() & (maxprice !=null & minprice == null)){
-                products = productRepository.findByPriceIsLessThanEqual(maxprice);
-            }else if (title == null || title.isEmpty() & (maxprice == null & minprice != null)){
-                products = productRepository.findByPriceIsGreaterThanEqual(minprice);
-            }else if (title != null & (maxprice !=null & minprice != null)){
-                products = productRepository.findByTitleLikeAndPriceGreaterThanEqualAndPriceLessThanEqual("%" + title + "%", minprice, maxprice);
-            }else if (title != null & (maxprice == null & minprice != null)){
-                products = productRepository.findByTitleLikeAndPriceIsGreaterThanEqual("%" + title + "%", minprice);
-            }else if (title != null & (maxprice !=null & minprice == null)){
-                products = productRepository.findByTitleLikeAndPriceIsLessThanEqual("%" + title + "%", maxprice);
-            }
-            else {
-                products = productRepository.findByTitleLike("%" + title + "%");
-            }
-        }
-        model.addAttribute("products", products);
+        Sort sort;
 
-        if(showproduct != null) {
-            if (showproduct.equals("Find products with min price")) {
-                products = productRepository.findProductByMinPrice();
-                model.addAttribute("products", products);
-            }else if (showproduct.equals("Find products with max price")) {
-                products = productRepository.findProductByMaxPrice();
-                model.addAttribute("products", products);
-            }else if (showproduct.equals("Find products with min&max price")) {
-                products = productRepository.findProductByMaxAndMinPrice();
-                model.addAttribute("products", products);
+        if(srt != null){
+            if (srt.startsWith("id")){
+                sort = Sort.by("id").ascending();
+            }else if (srt.startsWith("title")){
+                sort = Sort.by("title").ascending();
+            }else if (srt.startsWith("price")){
+                sort = Sort.by("price").ascending();
+            }else {
+                sort = Sort.by("title").ascending();
             }
+        }else {
+            sort = Sort.by("title").ascending();
         }
+
+        PageRequest pageRequest = PageRequest.of(page.orElse(1) - 1, size.orElse(5), sort);;
+
+        Specification specification = ProductSpecification.trueLiteral();
+
+        if (title != null && !title.isEmpty()){
+           specification = specification.and(ProductSpecification.titleLike(title));
+        }
+
+        if(minprice != null || maxprice != null){
+            specification = specification.and(ProductSpecification.priceLike(minprice, maxprice));
+        }
+
+        if ((title != null) && !title.isEmpty() && minprice != null && maxprice != null){
+            specification = specification.and(ProductSpecification.findByPriceAndTitle(title, minprice, maxprice));
+        }
+
+        if(minprice != null && maxprice != null){
+            specification = specification.and(ProductSpecification.priceBetween(minprice, maxprice));
+        }
+        model.addAttribute("products", productRepository.findAll(specification, pageRequest));
+
+//        List<Product> products;
+//        if(showproduct != null){
+//            if (showproduct.equals("Find products with min price")) {
+//                products = productRepository.findProductByMinPrice();
+//                model.addAttribute("products", products);
+//            }else if (showproduct.equals("Find products with max price")) {
+//                products = productRepository.findProductByMaxPrice();
+//                model.addAttribute("products", products);
+//            }else if (showproduct.equals("Find products with min&max price")) {
+//                products = productRepository.findProductByMaxAndMinPrice();
+//                model.addAttribute("products", products);
+//            }
+//        }
         return "products";
     }
 

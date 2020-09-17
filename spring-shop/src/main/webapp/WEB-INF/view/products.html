@@ -38,18 +38,18 @@
             <a class="btn btn-primary" th:href="@{/products/addproduct}">Add Product</a>
         </div>
 
-        <div class="col-12 mt-3">
-            <form>
-                <input class="btn btn-primary" type="submit" value="Find products with min price" name = "showproduct"  >
-                <input class="btn btn-primary" type="submit" value="Find products with max price" name = "showproduct"  >
-                <input class="btn btn-primary" type="submit" value="Find products with min&max price" name = "showproduct"  >
-            </form>
-        </div>
+<!--        <div class="col-12 mt-3">-->
+<!--            <form>-->
+<!--                <input class="btn btn-primary" type="submit" value="Find products with min price" name = "showproduct"  >-->
+<!--                <input class="btn btn-primary" type="submit" value="Find products with max price" name = "showproduct"  >-->
+<!--                <input class="btn btn-primary" type="submit" value="Find products with min&max price" name = "showproduct"  >-->
+<!--            </form>-->
+<!--        </div>-->
 
         <div class="col-12 mt-3">
             <form>
                 <label>Filter by Title</label>
-                <input type="text" name = "title" id="title" th:value="${param.title}">
+                <input th:with = "title = ${param.title}" type="text" name = "title" id="title" th:value="${param.title}">
                 <br>
                 <label>Min price</label>
                 <input type="text" name = "minprice" id="minprice" th:value="${param.minprice}">
@@ -58,6 +58,8 @@
                 <input type="text" name = "maxprice" id="maxprice" th:value="${param.maxprice}">
                 <br>
                 <button class="btn btn-primary" type="submit">Filter</button>
+                <a class="btn btn-primary" th:href="@{/products}">Reset</a>
+
             </form>
         </div>
 
@@ -65,13 +67,31 @@
             <table class="table table-bordered my-2">
                 <thead>
                 <tr>
-                    <th scope="col">Id</th>
-                    <th scope="col">Title</th>
-                    <th scope="col">Price</th>
+                    <th scope="col">
+                        <ul class="pagination">
+                            <li class="page-item ">
+                                <a class="page-link" th:href="@{/products(page = ${products.number +1},size=${products.size}, title=${param.title}, price=${param.price}, minprice=${param.minprice}, maxprice=${param.maxprice},sort = id)}">Id</a>
+                            </li>
+                        </ul>
+                    </th>
+                    <th scope="col">
+                        <ul class="pagination">
+                            <li class="page-item ">
+                                <a class="page-link" th:href="@{/products(page = ${products.number +1},size=${products.size}, title=${param.title}, price=${param.price}, minprice=${param.minprice}, maxprice=${param.maxprice},sort = title)}">Title</a>
+                            </li>
+                        </ul>
+                    </th>
+                    <th scope="col">
+                        <ul class="pagination">
+                            <li class="page-item ">
+                                <a class="page-link" th:href="@{/products(page = ${products.number +1},size=${products.size}, title=${param.title}, price=${param.price}, minprice=${param.minprice}, maxprice=${param.maxprice},sort = price)}">Price</a>
+                            </li>
+                        </ul>
+                    </th>
                 </tr>
                 </thead>
                 <tbody>
-                <tr th:each="product : ${products}">
+                <tr th:each="product : ${products.content}">
                     <th scope="row" th:text="${product.id}">1</th>
                     <td th:text="${product.title}">title</td>
                     <td th:text="${product.price}">price</td>
@@ -85,6 +105,29 @@
                 </tbody>
             </table>
         </div>
+
+        <div class="col-12">
+            <nav aria-label="...">
+                <ul class="pagination">
+                    <li class="page-item "
+                    th:if="${products.hasPrevious()}"
+                    th:class="page-item">
+                        <a class="page-link" th:href="@{products(page = ${products.number},size=${products.size}, title=${param.title}, price=${param.price}, minprice=${param.minprice}, maxprice=${param.maxprice}, sort=${products.getSort()})}">Previous</a>
+                    </li>
+                    <li th:each="num: ${#numbers.sequence(1, products.totalPages)}"
+                        class="page-item"
+                        th:classappend="${num == products.number + 1} ? 'active'">
+                        <a class="page-link" th:text="${num}"
+                        th:href="@{products(page=${num}, size=${products.size}, title=${param.title}, price=${param.price}, minprice=${param.minprice}, maxprice=${param.maxprice}, sort=${products.getSort()})}">1</a>
+                    </li>
+                    <li class="page-item"
+                        th:if="${products.hasNext()}">
+                        <a class="page-link" th:href="@{products(page = ${products.number + 2},size=${products.size}, title=${param.title}, price=${param.price}, minprice=${param.minprice}, maxprice=${param.maxprice}, sort=${products.getSort()})}">Next</a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+
     </div>
 </div>
 
