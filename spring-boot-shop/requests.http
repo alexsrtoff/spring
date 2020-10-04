@@ -1,0 +1,29 @@
+GET http://localhost:8080/shop/api/v1/products/all
+
+###
+GET http://localhost:8080/shop/api/v1/products/1/id
+
+###
+POST http://localhost:8080/shop/api/v1/products
+Content-Type: application/json
+
+{
+  "title": "Phone111",
+  "price": 10111.00
+}
+
+###
+PUT http://localhost:8080/shop/api/v1/products
+Content-Type: application/json
+
+{
+  "id": 25,
+  "title": "Phone222",
+  "price": 10111.00
+}
+
+###
+DELETE http://localhost:8080/shop/api/v1/products/25/id
+
+
+
